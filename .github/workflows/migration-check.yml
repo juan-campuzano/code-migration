@@ -1,0 +1,101 @@
+name: Flutter Migration Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  analyze-deprecated-code:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.6'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        working-directory: ./app
+        run: flutter pub get
+      
+      - name: Analyze code for deprecations
+        working-directory: ./app
+        run: |
+          echo "🔍 Analyzing code for deprecated patterns..."
+          flutter analyze --no-fatal-infos || true
+      
+      - name: Check for deprecated APIs
+        working-directory: ./app
+        run: |
+          echo "📊 Checking for deprecated APIs..."
+          # Buscar patrones deprecados comunes
+          echo "## Deprecated TextTheme properties:"
+          grep -r "headline[1-6]" lib/ || echo "None found"
+          grep -r "bodyText[1-2]" lib/ || echo "None found"
+          grep -r "subtitle[1-2]" lib/ || echo "None found"
+          grep -r "caption" lib/ || echo "None found"
+          
+          echo "## Deprecated Button properties:"
+          grep -r "primary:" lib/ | grep -v "primarySwatch" || echo "None found"
+          grep -r "onPrimary:" lib/ || echo "None found"
+          
+          echo "## Deprecated WillPopScope:"
+          grep -r "WillPopScope" lib/ || echo "None found"
+          
+          echo "## Deprecated AppBar.brightness:"
+          grep -r "brightness:" lib/ || echo "None found"
+      
+      - name: Run dart fix dry-run
+        working-directory: ./app
+        run: |
+          echo "🔧 Checking what dart fix would change..."
+          dart fix --dry-run || true
+      
+      - name: Count deprecations
+        working-directory: ./app
+        run: |
+          echo "📈 Deprecation Statistics:"
+          echo "TextTheme: $(grep -r "headline[1-6]\|bodyText[1-2]\|subtitle[1-2]" lib/ | wc -l) occurrences"
+          echo "Button styles: $(grep -r "primary:\|onPrimary:" lib/ | wc -l) occurrences"
+          echo "WillPopScope: $(grep -r "WillPopScope" lib/ | wc -l) occurrences"
+
+  migration-report:
+    runs-on: ubuntu-latest
+    needs: analyze-deprecated-code
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Generate migration report
+        run: |
+          echo "# Flutter Migration Report" > migration_report.md
+          echo "" >> migration_report.md
+          echo "## Overview" >> migration_report.md
+          echo "This repository contains intentionally deprecated code for testing migration tools." >> migration_report.md
+          echo "" >> migration_report.md
+          echo "## Deprecated APIs Found" >> migration_report.md
+          echo "- TextTheme properties (headline1-6, bodyText1-2, etc.)" >> migration_report.md
+          echo "- Button style properties (primary, onPrimary)" >> migration_report.md
+          echo "- WillPopScope widget" >> migration_report.md
+          echo "- AppBar.brightness property" >> migration_report.md
+          echo "- ButtonBar widget" >> migration_report.md
+          echo "" >> migration_report.md
+          echo "## Next Steps" >> migration_report.md
+          echo "1. Run \`dart fix --apply\` to auto-fix some issues" >> migration_report.md
+          echo "2. Manually update remaining deprecated code" >> migration_report.md
+          echo "3. Test the application thoroughly" >> migration_report.md
+          echo "4. Update Flutter SDK version" >> migration_report.md
+      
+      - name: Upload migration report
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-report
+          path: migration_report.md

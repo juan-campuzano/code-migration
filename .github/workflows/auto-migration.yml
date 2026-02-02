@@ -1,0 +1,85 @@
+name: Auto Migration PR
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  auto-migrate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        working-directory: ./app
+        run: flutter pub get
+      
+      - name: Run dart fix
+        working-directory: ./app
+        run: |
+          echo "🔧 Running dart fix..."
+          dart fix --apply || true
+      
+      - name: Analyze after fixes
+        working-directory: ./app
+        run: |
+          echo "🔍 Analyzing after dart fix..."
+          flutter analyze --no-fatal-infos || true
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: auto-migrate deprecated Flutter code'
+          title: '🤖 Auto Migration: Update deprecated Flutter code'
+          body: |
+            ## Automated Flutter Migration
+            
+            This PR contains automated fixes for deprecated Flutter code using `dart fix`.
+            
+            ### Changes Made
+            - Applied automatic fixes for deprecated APIs
+            - Updated code to use modern Flutter patterns
+            
+            ### What to Review
+            - [ ] All tests pass
+            - [ ] App builds successfully
+            - [ ] No runtime errors introduced
+            - [ ] UI looks correct
+            
+            ### Remaining Manual Work
+            Some deprecations may require manual fixes. Please review:
+            - Complex widget refactoring
+            - Custom theme implementations
+            - Navigation patterns
+            
+            ---
+            *Generated automatically by GitHub Actions*
+          branch: auto-migration-${{ github.run_number }}
+          labels: |
+            automated
+            migration
+            dependencies
+          draft: false
