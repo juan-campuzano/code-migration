@@ -1,20 +1,27 @@
 # Repository Outdated Score Server
 
-A Python FastAPI server that analyzes repositories for deprecated code patterns and provides a score indicating how outdated the codebase is.
+A Python FastAPI server that analyzes repositories for deprecated code patterns, provides a score indicating how outdated the codebase is, and can automatically migrate code using GitHub Copilot AI.
 
 ## Features
 
 - 🔍 Analyzes code repositories for deprecated patterns
 - 📊 Provides an outdated score (0-100)
 - 🎯 Detects Flutter/Dart deprecations automatically
+- 🤖 AI-powered code migration using GitHub Copilot SDK
 - 🚀 RESTful API with automatic documentation
 - 💡 Provides actionable recommendations
 
 ## Installation
 
-1. Install Python 3.8 or higher
+### Prerequisites
 
-2. Install dependencies:
+1. Python 3.9 or higher
+2. (Optional) GitHub Copilot CLI for migration features
+   - Install from: https://docs.github.com/en/copilot/copilot-cli
+   - Authenticate: `copilot auth login`
+
+### Install Dependencies
+
 ```bash
 cd server
 pip install -r requirements.txt
@@ -90,6 +97,50 @@ Analyze a repository and get an outdated score
 }
 ```
 
+### `POST /migrate`
+Automatically migrate a repository using GitHub Copilot AI
+
+**Requirements:**
+- GitHub Copilot CLI must be installed and authenticated
+- Active GitHub Copilot subscription or BYOK setup
+
+**Request Body:**
+```json
+{
+  "path": "/absolute/path/to/repository",
+  "model": "gpt-4"
+}
+```
+
+**Response (Success):**
+```json
+{
+  "success": true,
+  "message": "Migration completed successfully",
+  "repo_path": "/absolute/path/to/repository",
+  "changes": [
+    "Modified 5 files with deprecated patterns",
+    "Updated TextTheme properties in main.dart"
+  ],
+  "migration_log": [
+    {"type": "reasoning", "content": "Analyzing deprecated patterns..."},
+    {"type": "tool", "tool_name": "edit_file"},
+    {"type": "message", "content": "Successfully updated all files"}
+  ]
+}
+```
+
+**Response (CLI Not Available):**
+```json
+{
+  "success": false,
+  "message": "Migration agent not available",
+  "error": "Copilot CLI is not available. Please install: https://docs.github.com/en/copilot/copilot-cli",
+  "changes": [],
+  "migration_log": []
+}
+```
+
 ## Score Interpretation
 
 The outdated score ranges from 0 to 100:
@@ -126,6 +177,28 @@ print(f"Severity: {result['severity']}")
 print(f"Total Deprecations: {result['total_deprecations']}")
 ```
 
+### Migrating a repository (with Copilot CLI)
+
+```python
+import requests
+
+# Trigger automated migration
+response = requests.post(
+    "http://localhost:8000/migrate",
+    json={
+        "path": "/path/to/your/repository",
+        "model": "gpt-4"
+    }
+)
+
+result = response.json()
+if result['success']:
+    print(f"Migration completed!")
+    print(f"Changes: {result['changes']}")
+else:
+    print(f"Migration failed: {result.get('error', 'Unknown error')}")
+```
+
 ### Using the provided test client
 
 ```bash
@@ -158,6 +231,58 @@ The server currently detects the following Flutter/Dart deprecations:
    - `activeColor` (deprecated in Flutter 3.0)
    - `checkColor` (deprecated in Flutter 3.0)
 
+## GitHub Copilot SDK Integration
+
+The server includes integration with the [GitHub Copilot SDK](https://github.com/github/copilot-sdk) for AI-powered code migration.
+
+### How It Works
+
+1. **Analysis Phase**: The server first analyzes the repository to identify deprecated patterns
+2. **Migration Phase**: If deprecations are found, the Copilot AI agent:
+   - Receives a detailed prompt with all deprecated patterns
+   - Navigates to the repository
+   - Systematically fixes each deprecation
+   - Verifies changes maintain functionality
+   - Returns a summary of changes made
+
+### Requirements for Migration
+
+To use the `/migrate` endpoint, you need:
+
+1. **GitHub Copilot CLI** installed and in your PATH
+   ```bash
+   # Install (see official docs)
+   # Then authenticate:
+   copilot auth login
+   ```
+
+2. **Active Copilot subscription** OR **BYOK (Bring Your Own Key)**
+   - Standard: GitHub Copilot subscription
+   - BYOK: Configure your own LLM API keys (OpenAI, Anthropic, Azure)
+
+### Migration Agent
+
+The `migration_agent.py` module provides:
+- Automatic Copilot CLI lifecycle management
+- Custom prompts optimized for code migration
+- Event streaming for progress tracking
+- Graceful handling when CLI is unavailable
+
+### Customizing Migration Prompts
+
+Edit `migration_agent.py` to customize how the agent performs migrations:
+
+```python
+def _build_migration_prompt(self, repo_path: str, deprecations: List[Dict]) -> str:
+    # Customize the prompt sent to the Copilot agent
+    prompt = f"""Your custom migration instructions...
+    
+    Repository: {repo_path}
+    Deprecations: {deprecations}
+    """
+    return prompt
+```
+
 ## Extending the Analyzer
 
 To add more deprecation patterns, edit the `FLUTTER_PATTERNS` list in `app.py`:
@@ -189,7 +314,12 @@ curl -X POST "http://localhost:8000/analyze" \
 ### Project Structure
 ```
 server/
-├── app.py              # Main FastAPI application
+├── app.py                  # Main FastAPI application
+├── migration_agent.py      # Copilot SDK integration for migrations
+├── requirements.txt        # Python dependencies
+├── test_client.py          # Test client script
+└── README.md              # This file
+```
 ├── requirements.txt    # Python dependencies
 ├── test_client.py      # Test client script
 └── README.md          # This file
