@@ -7,15 +7,38 @@ indicating how outdated the codebase is.
 
 import re
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import uvicorn
+from contextlib import asynccontextmanager
+
+# Import migration agent
+from migration_agent import get_migration_agent, shutdown_migration_agent
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events."""
+    # Startup: Initialize migration agent
+    agent = await get_migration_agent()
+    if agent.is_initialized:
+        print("✅ Migration agent initialized")
+    else:
+        print("⚠️  Migration agent not available (Copilot CLI not found)")
+    
+    yield
+    
+    # Shutdown: Clean up migration agent
+    await shutdown_migration_agent()
+    print("Migration agent shut down")
+
 
 app = FastAPI(
     title="Repository Outdated Score API",
     description="Analyze repositories and get a score of how outdated they are",
-    version="1.0.0"
+    version="2.0.0",
+    lifespan=lifespan
 )
 
 
@@ -40,6 +63,22 @@ class AnalysisResult(BaseModel):
     outdated_score: float
     severity: str
     recommendations: List[str]
+
+
+class MigrationRequest(BaseModel):
+    """Request model for repository migration."""
+    path: str = Field(..., description="Absolute path to the repository to migrate")
+    model: Optional[str] = Field("gpt-4", description="LLM model to use for migration")
+
+
+class MigrationResult(BaseModel):
+    """Result of repository migration."""
+    success: bool
+    message: str
+    repo_path: Optional[str] = None
+    changes: List[str]
+    migration_log: Optional[List[dict]] = None
+    error: Optional[str] = None
 
 
 class RepositoryAnalyzer:
@@ -166,9 +205,10 @@ async def root():
     """Root endpoint with API information."""
     return {
         "name": "Repository Outdated Score API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "endpoints": {
             "/analyze": "POST - Analyze a repository",
+            "/migrate": "POST - Migrate a repository using Copilot AI",
             "/health": "GET - Health check"
         }
     }
@@ -199,6 +239,62 @@ async def analyze_repository(request: RepositoryRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.post("/migrate", response_model=MigrationResult)
+async def migrate_repository(request: MigrationRequest):
+    """
+    Migrate a repository by fixing deprecated code using GitHub Copilot AI.
+    
+    This endpoint uses the GitHub Copilot SDK to intelligently fix deprecated
+    code patterns found in the repository. The agent will:
+    1. Analyze the repository for deprecated code
+    2. Apply modern equivalents for each deprecation
+    3. Ensure changes maintain functionality
+    
+    Requirements:
+    - GitHub Copilot CLI must be installed and authenticated
+    - See: https://docs.github.com/en/copilot/copilot-cli
+    """
+    try:
+        # First analyze to get deprecations
+        analyzer = RepositoryAnalyzer(request.path)
+        analysis = analyzer.analyze()
+        
+        if analysis.total_deprecations == 0:
+            return MigrationResult(
+                success=True,
+                message="No deprecated code found. Repository is up-to-date!",
+                repo_path=request.path,
+                changes=[],
+                migration_log=[]
+            )
+        
+        # Get migration agent and perform migration
+        agent = await get_migration_agent()
+        
+        if not agent.is_initialized:
+            return MigrationResult(
+                success=False,
+                message="Migration agent not available",
+                error="Copilot CLI is not available. Please install: https://docs.github.com/en/copilot/copilot-cli",
+                changes=[],
+                migration_log=[]
+            )
+        
+        # Perform migration
+        result = await agent.migrate_repository(
+            repo_path=request.path,
+            deprecations=[p.dict() for p in analysis.deprecated_patterns],
+            model=request.model
+        )
+        
+        return MigrationResult(**result)
+        
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
 
 
 def main():
