@@ -23,6 +23,11 @@ code-migration/
 │   │   └── deprecated_list.dart
 │   ├── pubspec.yaml             # Dependencias (versión compatible con APIs deprecadas)
 │   └── README_DEPRECATED_CODE.md
+├── server/                       # Python API Server para análisis de repositorios
+│   ├── app.py                   # FastAPI server principal
+│   ├── test_client.py           # Cliente de prueba
+│   ├── requirements.txt         # Dependencias de Python
+│   └── README.md                # Documentación del servidor
 ├── .github/
 │   └── workflows/
 │       ├── migration-check.yml   # Workflow para detectar deprecaciones
@@ -64,21 +69,39 @@ flutter run
 
 ## 🔍 Análisis de Código Deprecado
 
-### Opción 1: Script Automatizado
+### Opción 1: Python API Server (Nuevo)
+
+Servidor web que analiza repositorios y proporciona un score de qué tan desactualizado está el código:
+
+```bash
+# Instalar dependencias
+cd server
+pip install -r requirements.txt
+
+# Ejecutar el servidor
+python app.py
+
+# En otra terminal, analizar el repositorio
+python test_client.py /path/to/repository
+```
+
+Ver [server/README.md](server/README.md) para más detalles sobre la API REST.
+
+### Opción 2: Script Automatizado
 
 ```bash
 chmod +x scripts/analyze_deprecated.sh
 ./scripts/analyze_deprecated.sh
 ```
 
-### Opción 2: Flutter Analyze
+### Opción 3: Flutter Analyze
 
 ```bash
 cd app
 flutter analyze --no-fatal-infos
 ```
 
-### Opción 3: Dart Fix (ver qué se puede arreglar)
+### Opción 4: Dart Fix (ver qué se puede arreglar)
 
 ```bash
 cd app
@@ -228,17 +251,23 @@ Al ejecutar `flutter analyze`, encontrarás aproximadamente:
 
 ## 🛠️ Herramientas Recomendadas
 
-1. **Dart Fix** - Herramienta oficial de Dart para migraciones automáticas
+1. **Python API Server** - Servidor web para análisis automático de repositorios
+   ```bash
+   cd server && python app.py
+   ```
+   Ver [server/README.md](server/README.md) para documentación completa de la API.
+
+2. **Dart Fix** - Herramienta oficial de Dart para migraciones automáticas
    ```bash
    dart fix --apply
    ```
 
-2. **Flutter Analyze** - Análisis estático de código
+3. **Flutter Analyze** - Análisis estático de código
    ```bash
    flutter analyze
    ```
 
-3. **IDE Plugins** - Detectan deprecaciones en tiempo real
+4. **IDE Plugins** - Detectan deprecaciones en tiempo real
    - Flutter/Dart plugins para VS Code
    - Flutter plugin para IntelliJ/Android Studio
 
