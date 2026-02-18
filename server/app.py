@@ -161,19 +161,14 @@ class RepositoryAnalyzer:
                 ))
                 total_deprecations += count
         
-        # Try to run flutter analyze for additional insights
+        # Try to run flutter analyze for additional insights (not added to total to avoid double-counting)
         flutter_analysis = self._run_flutter_analyze()
-        if flutter_analysis:
-            total_deprecations += flutter_analysis.get('deprecated_count', 0)
         
         # Calculate outdated score (0-100, where 100 is most outdated)
         # Base score on number of deprecations per file
-        if code_files:
-            deprecations_per_file = total_deprecations / len(code_files)
-            # Scale: 0 deprecations = 0 score, 10+ deprecations per file = 100 score
-            outdated_score = min(100, deprecations_per_file * 10)
-        else:
-            outdated_score = 0
+        deprecations_per_file = total_deprecations / len(code_files)
+        # Scale: 0 deprecations = 0 score, 10+ deprecations per file = 100 score
+        outdated_score = min(100, deprecations_per_file * 10)
         
         # Determine severity
         if outdated_score < 20:
