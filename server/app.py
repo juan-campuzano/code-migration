@@ -102,7 +102,7 @@ class RepositoryAnalyzer:
         code_files = self._find_code_files()
         
         if not code_files:
-            raise ValueError("No code files found in repository")
+            raise ValueError("No code files found in repository (required for score calculation)")
         
         # Analyze patterns
         deprecated_patterns = []

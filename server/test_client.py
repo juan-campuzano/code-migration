@@ -68,7 +68,7 @@ def analyze_repository(server_url: str, repo_path: str):
         sys.exit(1)
     except requests.exceptions.RequestException as e:
         print(f"❌ Error: {e}")
-        if hasattr(e, 'response') and e.response is not None and hasattr(e.response, 'text'):
+        if e.response is not None and hasattr(e.response, 'text'):
             print(f"   Server response: {e.response.text}")
         sys.exit(1)
 
