@@ -123,9 +123,9 @@ class RepositoryAnalyzer:
         
         # Calculate outdated score (0-100, where 100 is most outdated)
         # Base score on number of deprecations per file
-        deprecations_per_file = total_deprecations / len(code_files)
+        deprecations_per_file = float(total_deprecations) / len(code_files)
         # Scale: 0 deprecations = 0 score, 10+ deprecations per file = 100 score
-        outdated_score = min(100, deprecations_per_file * 10)
+        outdated_score = min(100.0, deprecations_per_file * 10)
         
         # Determine severity
         if outdated_score < 20:
