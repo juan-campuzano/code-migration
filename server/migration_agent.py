@@ -222,7 +222,11 @@ After making changes, provide a summary of what was fixed."""
                 # Try to extract file mentions from message
                 content = entry.get("content", "")
                 if "modified" in content.lower() or "updated" in content.lower():
-                    changes.append(content[:MAX_CHANGE_DESCRIPTION_LENGTH])
+                    # Truncate with ellipsis if needed
+                    if len(content) > MAX_CHANGE_DESCRIPTION_LENGTH:
+                        changes.append(content[:MAX_CHANGE_DESCRIPTION_LENGTH] + "...")
+                    else:
+                        changes.append(content)
         
         return changes if changes else ["Changes applied (see migration log for details)"]
 
