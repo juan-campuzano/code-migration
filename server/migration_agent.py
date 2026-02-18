@@ -17,6 +17,11 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+# Configuration constants
+DEFAULT_MODEL = "gpt-4"
+MIGRATION_TIMEOUT_SECONDS = 300  # 5 minutes
+DEFAULT_SESSION_TIMEOUT = 600  # 10 minutes
+
 
 class MigrationAgent:
     """Agent that handles code migration using GitHub Copilot SDK."""
@@ -62,7 +67,8 @@ class MigrationAgent:
         self, 
         repo_path: str, 
         deprecations: List[Dict],
-        model: str = "gpt-4"
+        model: str = DEFAULT_MODEL,
+        timeout: int = MIGRATION_TIMEOUT_SECONDS
     ) -> Dict:
         """
         Migrate a repository by fixing deprecated code patterns.
@@ -71,6 +77,7 @@ class MigrationAgent:
             repo_path: Path to the repository to migrate
             deprecations: List of deprecation patterns found
             model: LLM model to use (default: gpt-4)
+            timeout: Timeout in seconds (default: 300)
             
         Returns:
             Dict with migration results including changes made and status
@@ -131,13 +138,13 @@ class MigrationAgent:
             
             # Wait for completion (with timeout)
             try:
-                await asyncio.wait_for(done.wait(), timeout=300)  # 5 minute timeout
+                await asyncio.wait_for(done.wait(), timeout=timeout)
             except asyncio.TimeoutError:
-                logger.error("Migration timed out after 5 minutes")
+                logger.error(f"Migration timed out after {timeout} seconds")
                 await session.destroy()
                 return {
                     "success": False,
-                    "error": "Migration timed out after 5 minutes",
+                    "error": f"Migration timed out after {timeout} seconds",
                     "changes": [],
                     "migration_log": migration_log
                 }

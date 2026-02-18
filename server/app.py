@@ -14,7 +14,11 @@ import uvicorn
 from contextlib import asynccontextmanager
 
 # Import migration agent
-from migration_agent import get_migration_agent, shutdown_migration_agent
+from migration_agent import (
+    get_migration_agent, 
+    shutdown_migration_agent,
+    DEFAULT_MODEL
+)
 
 
 @asynccontextmanager
@@ -68,7 +72,7 @@ class AnalysisResult(BaseModel):
 class MigrationRequest(BaseModel):
     """Request model for repository migration."""
     path: str = Field(..., description="Absolute path to the repository to migrate")
-    model: Optional[str] = Field("gpt-4", description="LLM model to use for migration")
+    model: Optional[str] = Field(DEFAULT_MODEL, description="LLM model to use for migration")
 
 
 class MigrationResult(BaseModel):
