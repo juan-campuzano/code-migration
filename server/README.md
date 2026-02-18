@@ -211,12 +211,6 @@ If port 8000 is already in use, you can specify a different port:
 uvicorn app:app --host 0.0.0.0 --port 8080
 ```
 
-### Flutter command not found
-If the server cannot find the `flutter` command:
-1. Make sure Flutter is installed
-2. Add Flutter to your PATH
-3. Restart the server
-
 ### Permission denied
 If you get permission errors:
 ```bash
