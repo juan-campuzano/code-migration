@@ -15,12 +15,13 @@ try:
 except ImportError:
     COPILOT_AVAILABLE = False
 
-logger = logging.getLogger(__name__)
+from config import (
+    DEFAULT_MODEL,
+    MIGRATION_TIMEOUT_SECONDS,
+    MAX_CHANGE_DESCRIPTION_LENGTH
+)
 
-# Configuration constants
-DEFAULT_MODEL = "gpt-4"
-MIGRATION_TIMEOUT_SECONDS = 300  # 5 minutes
-DEFAULT_SESSION_TIMEOUT = 600  # 10 minutes
+logger = logging.getLogger(__name__)
 
 
 class MigrationAgent:
@@ -105,7 +106,11 @@ class MigrationAgent:
             def on_event(event):
                 nonlocal response_content
                 
-                event_type = event.type.value
+                try:
+                    event_type = event.type.value if hasattr(event.type, 'value') else str(event.type)
+                except AttributeError:
+                    event_type = "unknown"
+                    logger.warning(f"Event has unexpected structure: {event}")
                 
                 if event_type == "assistant.reasoning":
                     migration_log.append({
@@ -217,7 +222,7 @@ After making changes, provide a summary of what was fixed."""
                 # Try to extract file mentions from message
                 content = entry.get("content", "")
                 if "modified" in content.lower() or "updated" in content.lower():
-                    changes.append(content[:200])  # Limit to 200 chars
+                    changes.append(content[:MAX_CHANGE_DESCRIPTION_LENGTH])
         
         return changes if changes else ["Changes applied (see migration log for details)"]
 

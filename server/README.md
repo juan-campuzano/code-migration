@@ -15,7 +15,9 @@ A Python FastAPI server that analyzes repositories for deprecated code patterns,
 
 ### Prerequisites
 
-1. Python 3.8 or higher (Python 3.9+ recommended for best compatibility)
+1. Python 3.8 or higher
+   - Python 3.9+ recommended for full Copilot SDK compatibility
+   - Some Copilot SDK features may require Python 3.9+
 2. (Optional) GitHub Copilot CLI for migration features
    - Install from: https://docs.github.com/en/copilot/copilot-cli
    - Authenticate: `copilot auth login`

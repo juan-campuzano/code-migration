@@ -13,12 +13,9 @@ from pydantic import BaseModel, Field
 import uvicorn
 from contextlib import asynccontextmanager
 
-# Import migration agent
-from migration_agent import (
-    get_migration_agent, 
-    shutdown_migration_agent,
-    DEFAULT_MODEL
-)
+# Import migration agent and config
+from migration_agent import get_migration_agent, shutdown_migration_agent
+from config import DEFAULT_MODEL
 
 
 @asynccontextmanager

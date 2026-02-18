@@ -9,10 +9,11 @@ import json
 import requests
 from pathlib import Path
 
-# Configuration constants
-DEFAULT_MODEL = "gpt-4"
-ANALYSIS_TIMEOUT = 60  # seconds
-MIGRATION_TIMEOUT = 600  # 10 minutes
+from config import (
+    DEFAULT_MODEL,
+    ANALYSIS_TIMEOUT,
+    DEFAULT_SESSION_TIMEOUT as MIGRATION_TIMEOUT
+)
 
 
 def migrate_repository(server_url: str, repo_path: str, model: str = DEFAULT_MODEL):
