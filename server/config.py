@@ -6,8 +6,8 @@ Configuration constants for the repository migration server.
 DEFAULT_MODEL = "gpt-4"
 
 # Timeout Configuration (in seconds)
-MIGRATION_TIMEOUT_SECONDS = 300  # 5 minutes
-DEFAULT_SESSION_TIMEOUT = 600  # 10 minutes
+AGENT_MIGRATION_TIMEOUT = 300  # 5 minutes - timeout for Copilot agent operations
+CLIENT_MIGRATION_TIMEOUT = 600  # 10 minutes - HTTP timeout for client requests
 ANALYSIS_TIMEOUT = 60  # 1 minute
 
 # Content Formatting

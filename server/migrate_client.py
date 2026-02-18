@@ -12,7 +12,7 @@ from pathlib import Path
 from config import (
     DEFAULT_MODEL,
     ANALYSIS_TIMEOUT,
-    DEFAULT_SESSION_TIMEOUT as MIGRATION_TIMEOUT
+    CLIENT_MIGRATION_TIMEOUT
 )
 
 
@@ -76,7 +76,7 @@ def migrate_repository(server_url: str, repo_path: str, model: str = DEFAULT_MOD
         migrate_response = requests.post(
             f"{server_url}/migrate",
             json={"path": repo_path, "model": model},
-            timeout=MIGRATION_TIMEOUT
+            timeout=CLIENT_MIGRATION_TIMEOUT
         )
         migrate_response.raise_for_status()
         
@@ -120,7 +120,7 @@ def migrate_repository(server_url: str, repo_path: str, model: str = DEFAULT_MOD
             return 1
             
     except requests.exceptions.Timeout:
-        print(f"❌ Migration timed out after {MIGRATION_TIMEOUT} seconds")
+        print(f"❌ Migration timed out after {CLIENT_MIGRATION_TIMEOUT} seconds")
         print("   The repository may be too large or complex.")
         return 1
     except requests.exceptions.RequestException as e:

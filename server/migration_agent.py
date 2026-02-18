@@ -17,7 +17,7 @@ except ImportError:
 
 from config import (
     DEFAULT_MODEL,
-    MIGRATION_TIMEOUT_SECONDS,
+    AGENT_MIGRATION_TIMEOUT,
     MAX_CHANGE_DESCRIPTION_LENGTH
 )
 
@@ -69,7 +69,7 @@ class MigrationAgent:
         repo_path: str, 
         deprecations: List[Dict],
         model: str = DEFAULT_MODEL,
-        timeout: int = MIGRATION_TIMEOUT_SECONDS
+        timeout: int = AGENT_MIGRATION_TIMEOUT
     ) -> Dict:
         """
         Migrate a repository by fixing deprecated code patterns.
@@ -77,8 +77,8 @@ class MigrationAgent:
         Args:
             repo_path: Path to the repository to migrate
             deprecations: List of deprecation patterns found
-            model: LLM model to use (default: gpt-4)
-            timeout: Timeout in seconds (default: 300)
+            model: LLM model to use (default from config.DEFAULT_MODEL)
+            timeout: Timeout in seconds (default from config.AGENT_MIGRATION_TIMEOUT)
             
         Returns:
             Dict with migration results including changes made and status
