@@ -5,11 +5,9 @@ Analyzes repositories for deprecated code patterns and provides a score
 indicating how outdated the codebase is.
 """
 
-import os
 import re
-import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import uvicorn
@@ -98,44 +96,6 @@ class RepositoryAnalyzer:
                 return len(matches)
         except Exception:
             return 0
-    
-    def _run_flutter_analyze(self) -> Optional[Dict]:
-        """Run flutter analyze if it's a Flutter project."""
-        pubspec_path = self.repo_path / 'pubspec.yaml'
-        if not pubspec_path.exists():
-            # Check in app subdirectory
-            pubspec_path = self.repo_path / 'app' / 'pubspec.yaml'
-            if not pubspec_path.exists():
-                return None
-        
-        # Determine the correct directory
-        flutter_dir = pubspec_path.parent
-        
-        try:
-            # Run flutter analyze
-            result = subprocess.run(
-                ['flutter', 'analyze', '--no-fatal-infos'],
-                cwd=flutter_dir,
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            
-            output = result.stdout + result.stderr
-            
-            # Parse the output for deprecation warnings
-            deprecated_count = output.lower().count('deprecated')
-            error_count = output.lower().count('error')
-            warning_count = output.lower().count('warning')
-            
-            return {
-                'deprecated_count': deprecated_count,
-                'error_count': error_count,
-                'warning_count': warning_count,
-                'output': output[:1000]  # Limit output size
-            }
-        except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
-            return None
     
     def analyze(self) -> AnalysisResult:
         """Perform full analysis of the repository."""
