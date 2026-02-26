@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   schedule: daily
 permissions:
+  id-token: write 
   contents: read
   issues: read
   pull-requests: read
