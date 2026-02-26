@@ -2,7 +2,7 @@
 name: AppModernization-Flutter
 description: Modernize the Flutter application.
 argument-hint: Describe what to modernize (Flutter).
-tools: ['vscode', 'execute', 'read', 'agent', 'todo']
+tools: ['vscode', 'execute', 'read', 'agent', 'todo', 'galatea-front-mcp/*']
 model: Claude Sonnet 4.5
 ---
 
