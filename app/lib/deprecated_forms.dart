@@ -32,7 +32,7 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
           backgroundColor: Colors.green,
           action: SnackBarAction(
             label: 'OK',
-            textColor: Colors.white, // Deprecado
+            foregroundColor: Colors.white,
             onPressed: () {},
           ),
         ),
@@ -53,7 +53,7 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
           children: [
             Text(
               'Registro de Usuario',
-              style: Theme.of(context).textTheme.headline3,
+              style: Theme.of(context).textTheme.displaySmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -151,11 +151,11 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
             ),
             const SizedBox(height: 16),
 
-            // Checkbox con estilo deprecado
+            // Checkbox con estilo actualizado
             CheckboxListTile(
               title: Text(
                 'Acepto los términos y condiciones',
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               value: _acceptTerms,
               onChanged: (value) {
@@ -163,18 +163,21 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
                   _acceptTerms = value ?? false;
                 });
               },
-              // Usando checkColor y activeColor (deprecado)
+              // Using updated fillColor with WidgetStateProperty
               checkColor: Colors.white,
-              activeColor: Colors.blue,
+              fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.selected)) return Colors.blue;
+                return Colors.grey;
+              }),
               controlAffinity: ListTileControlAffinity.leading,
             ),
             const SizedBox(height: 24),
 
-            // Botón con estilo deprecado
+            // Botón con estilo actualizado
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // Deprecado
-                onPrimary: Colors.white, // Deprecado
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -191,7 +194,7 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
             // Botón secundario
             OutlinedButton(
               style: OutlinedButton.styleFrom(
-                primary: Colors.grey, // Deprecado
+                foregroundColor: Colors.grey,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: Colors.grey),
                 shape: RoundedRectangleBorder(
@@ -224,18 +227,18 @@ class _DeprecatedFormExampleState extends State<DeprecatedFormExample> {
                   children: [
                     Text(
                       'Información adicional',
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Este formulario utiliza código deprecado de Flutter 3.10.6 para pruebas de migración automática.',
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 8),
                     // Usando RichText con TextSpan de forma antigua
                     RichText(
                       text: TextSpan(
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                         children: const [
                           TextSpan(
                             text: 'Nota: ',
@@ -277,7 +280,7 @@ class _DeprecatedRadioExampleState extends State<DeprecatedRadioExample> {
         RadioListTile<String>(
           title: Text(
             'Opción 1',
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           value: 'option1',
           groupValue: _selectedOption,
@@ -286,13 +289,16 @@ class _DeprecatedRadioExampleState extends State<DeprecatedRadioExample> {
               _selectedOption = value!;
             });
           },
-          // Usando activeColor (deprecado)
-          activeColor: Colors.blue,
+          // Using updated fillColor with WidgetStateProperty
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) return Colors.blue;
+            return Colors.grey;
+          }),
         ),
         RadioListTile<String>(
           title: Text(
             'Opción 2',
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           value: 'option2',
           groupValue: _selectedOption,
@@ -301,12 +307,15 @@ class _DeprecatedRadioExampleState extends State<DeprecatedRadioExample> {
               _selectedOption = value!;
             });
           },
-          activeColor: Colors.blue,
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) return Colors.blue;
+            return Colors.grey;
+          }),
         ),
         RadioListTile<String>(
           title: Text(
             'Opción 3',
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           value: 'option3',
           groupValue: _selectedOption,
@@ -315,7 +324,10 @@ class _DeprecatedRadioExampleState extends State<DeprecatedRadioExample> {
               _selectedOption = value!;
             });
           },
-          activeColor: Colors.blue,
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) return Colors.blue;
+            return Colors.grey;
+          }),
         ),
       ],
     );
