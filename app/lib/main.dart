@@ -12,22 +12,20 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Deprecated Code Demo',
       theme: ThemeData(
-        // Usando propiedades deprecadas de ThemeData
-        primarySwatch: Colors.blue,
-        // TextTheme con propiedades deprecadas
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         textTheme: const TextTheme(
-          headline1: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          headline2: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          headline3: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          headline4: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          headline5: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          headline6: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          bodyText1: TextStyle(fontSize: 14),
-          bodyText2: TextStyle(fontSize: 12),
-          subtitle1: TextStyle(fontSize: 16),
-          subtitle2: TextStyle(fontSize: 14),
-          caption: TextStyle(fontSize: 12, color: Colors.grey),
-          button: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          bodyLarge: TextStyle(fontSize: 14),
+          bodyMedium: TextStyle(fontSize: 12),
+          titleMedium: TextStyle(fontSize: 16),
+          titleSmall: TextStyle(fontSize: 14),
+          bodySmall: TextStyle(fontSize: 12, color: Colors.grey),
+          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
       ),
       home: const HomePage(),
@@ -53,11 +51,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Usando WillPopScope (deprecado en favor de PopScope)
-    return WillPopScope(
-      onWillPop: () async {
-        // Mostrar diálogo de confirmación
-        return await showDialog(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('¿Salir?'),
@@ -75,6 +73,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ) ??
             false;
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -89,23 +90,23 @@ class _HomePageState extends State<HomePage> {
                 // Usando Text con style de Theme deprecado
                 Text(
                   'Ejemplos de Código Deprecado',
-                  style: Theme.of(context).textTheme.headline1,
+                  style: Theme.of(context).textTheme.displayLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
                 Text(
                   'Contador: $_counter',
-                  style: Theme.of(context).textTheme.headline3,
+                  style: Theme.of(context).textTheme.displaySmall,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
-                // Usando ElevatedButton con styleFrom deprecado
+                // Usando ElevatedButton con styleFrom actualizado
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue, // Deprecado: usar backgroundColor
-                    onPrimary: Colors.white, // Deprecado: usar foregroundColor
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.all(16),
                   ),
                   onPressed: _incrementCounter,
@@ -113,10 +114,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 10),
 
-                // Más botones con estilos deprecados
+                // Más botones con estilos actualizados
                 TextButton(
                   style: TextButton.styleFrom(
-                    primary: Colors.green, // Deprecado
+                    foregroundColor: Colors.green,
                   ),
                   onPressed: () {
                     // Usando SnackBar de forma antigua
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                         content: const Text('TextButton presionado'),
                         action: SnackBarAction(
                           label: 'OK',
-                          textColor: Colors.yellow, // Deprecado
+                          foregroundColor: Colors.yellow,
                           onPressed: () {},
                         ),
                       ),
@@ -137,7 +138,7 @@ class _HomePageState extends State<HomePage> {
 
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    primary: Colors.red, // Deprecado
+                    foregroundColor: Colors.red,
                   ),
                   onPressed: () {
                     Navigator.push(
@@ -159,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.blue,
                     child: Text(
                       'Widget con Opacity',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ),
@@ -175,28 +176,27 @@ class _HomePageState extends State<HomePage> {
                   child: Center(
                     child: Text(
                       'Container con color antiguo',
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Usando ButtonBar (deprecado)
-                ButtonBar(
+                OverflowBar(
                   alignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.purple,
-                        onPrimary: Colors.white,
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
                       ),
                       onPressed: () {},
                       child: const Text('Botón 1'),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.orange,
-                        onPrimary: Colors.white,
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
                       ),
                       onPressed: () {},
                       child: const Text('Botón 2'),
@@ -231,11 +231,11 @@ class ListTileExample extends StatelessWidget {
         leading: const Icon(Icons.album),
         title: Text(
           'ListTile Example',
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         subtitle: Text(
           'Subtítulo con estilo deprecado',
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: const Icon(Icons.arrow_forward),
         onTap: () {
@@ -248,7 +248,7 @@ class ListTileExample extends StatelessWidget {
               actions: [
                 TextButton(
                   style: TextButton.styleFrom(
-                    primary: Colors.blue,
+                    foregroundColor: Colors.blue,
                   ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cerrar'),
@@ -267,12 +267,8 @@ class SecondPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Otra página con WillPopScope
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return false;
-      },
+    return PopScope(
+      canPop: true,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Segunda Página'),
@@ -283,29 +279,28 @@ class SecondPage extends StatelessWidget {
             children: [
               Text(
                 'Segunda Página',
-                style: Theme.of(context).textTheme.headline2,
+                style: Theme.of(context).textTheme.displayMedium,
               ),
               const SizedBox(height: 20),
               Text(
                 'Esta página también usa código deprecado',
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
-                  onPrimary: Colors.white,
-                  elevation: 8, // Elevation usado directamente
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  elevation: 8,
                 ),
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Volver'),
               ),
               const SizedBox(height: 20),
 
-              // Usando FlatButton style (patrón antiguo con TextButton)
               TextButton(
                 style: TextButton.styleFrom(
-                  primary: Colors.blue,
+                  foregroundColor: Colors.blue,
                   backgroundColor: Colors.blue.shade50,
                 ),
                 onPressed: () {},

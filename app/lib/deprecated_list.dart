@@ -22,16 +22,16 @@ class DeprecatedListExample extends StatelessWidget {
                 backgroundColor: Colors.blue.shade100,
                 child: Text(
                   '${index + 1}',
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               title: Text(
                 'Item $index',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               subtitle: Text(
                 'Descripción del item $index con estilo deprecado',
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               trailing: IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
@@ -56,20 +56,20 @@ class DeprecatedListExample extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue, // Deprecado
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Acción de agregar'),
               action: SnackBarAction(
                 label: 'Deshacer',
-                textColor: Colors.yellow, // Deprecado
+                foregroundColor: Colors.yellow,
                 onPressed: () {},
               ),
             ),
           );
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -82,14 +82,14 @@ class DeprecatedListExample extends StatelessWidget {
         children: [
           Text(
             'Opciones para Item $index',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
           ListTile(
             leading: const Icon(Icons.edit, color: Colors.blue),
             title: Text(
               'Editar',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             onTap: () => Navigator.pop(context),
           ),
@@ -97,7 +97,7 @@ class DeprecatedListExample extends StatelessWidget {
             leading: const Icon(Icons.delete, color: Colors.red),
             title: Text(
               'Eliminar',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             onTap: () => Navigator.pop(context),
           ),
@@ -105,7 +105,7 @@ class DeprecatedListExample extends StatelessWidget {
             leading: const Icon(Icons.share, color: Colors.green),
             title: Text(
               'Compartir',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             onTap: () => Navigator.pop(context),
           ),
@@ -123,10 +123,8 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
+    return PopScope(
+      canPop: true,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Detalle Item $itemIndex'),
@@ -169,7 +167,7 @@ class DetailPage extends StatelessWidget {
                   child: Icon(
                     Icons.image,
                     size: 80,
-                    color: Colors.white.withOpacity(0.7), // Forma antigua
+                    color: Colors.white.withValues(alpha: 0.7),
                   ),
                 ),
               ),
@@ -180,36 +178,35 @@ class DetailPage extends StatelessWidget {
                   children: [
                     Text(
                       'Item $itemIndex',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.displayMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Subtítulo del item',
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
                     const Divider(),
                     const SizedBox(height: 16),
                     Text(
                       'Descripción',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Esta es una descripción larga del item $itemIndex. '
                       'Contiene múltiples líneas de texto para demostrar '
                       'el uso de estilos de texto deprecados en Flutter 3.10.6.',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 24),
 
-                    // Usando ButtonBar (deprecado)
-                    ButtonBar(
+                    OverflowBar(
                       alignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextButton.icon(
                           style: TextButton.styleFrom(
-                            primary: Colors.blue, // Deprecado
+                            foregroundColor: Colors.blue,
                           ),
                           icon: const Icon(Icons.thumb_up),
                           label: const Text('Me gusta'),
@@ -217,7 +214,7 @@ class DetailPage extends StatelessWidget {
                         ),
                         TextButton.icon(
                           style: TextButton.styleFrom(
-                            primary: Colors.orange, // Deprecado
+                            foregroundColor: Colors.orange,
                           ),
                           icon: const Icon(Icons.comment),
                           label: const Text('Comentar'),
@@ -271,7 +268,7 @@ class DetailPage extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Text(
                                   'Información Adicional',
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ],
                             ),
@@ -291,8 +288,8 @@ class DetailPage extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.blue, // Deprecado
-                          onPrimary: Colors.white, // Deprecado
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         icon: const Icon(Icons.edit),
@@ -305,7 +302,7 @@ class DetailPage extends StatelessWidget {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          primary: Colors.red, // Deprecado
+                          foregroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         icon: const Icon(Icons.delete),
@@ -356,24 +353,23 @@ class DetailPage extends StatelessWidget {
         title: const Text('Confirmar eliminación'),
         content: Text(
           '¿Estás seguro de que quieres eliminar el Item $itemIndex?',
-          style: Theme.of(context).textTheme.bodyText2,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              primary: Colors.grey, // Deprecado
+              foregroundColor: Colors.grey,
             ),
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
           TextButton(
             style: TextButton.styleFrom(
-              primary: Colors.red, // Deprecado
+              foregroundColor: Colors.red,
             ),
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
-              // Simular eliminación
             },
             child: const Text('Eliminar'),
           ),
@@ -400,11 +396,11 @@ class _DeprecatedSwitchExampleState extends State<DeprecatedSwitchExample> {
     return SwitchListTile(
       title: Text(
         'Activar notificaciones',
-        style: Theme.of(context).textTheme.bodyText1,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
       subtitle: Text(
         'Recibe notificaciones de actualizaciones',
-        style: Theme.of(context).textTheme.caption,
+        style: Theme.of(context).textTheme.bodySmall,
       ),
       value: _switchValue,
       onChanged: (value) {
@@ -412,9 +408,10 @@ class _DeprecatedSwitchExampleState extends State<DeprecatedSwitchExample> {
           _switchValue = value;
         });
       },
-      // Usando activeColor (deprecado)
-      activeColor: Colors.blue,
-      activeTrackColor: Colors.blue.shade200,
+      thumbColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? Colors.blue : null),
+      trackColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? Colors.blue.shade200 : null),
     );
   }
 }

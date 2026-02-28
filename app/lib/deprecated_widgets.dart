@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 /// Clase con ejemplos de widgets y patrones deprecados
 class DeprecatedWidgetsExample extends StatefulWidget {
@@ -55,7 +54,7 @@ class _DeprecatedWidgetsExampleState extends State<DeprecatedWidgetsExample> {
         children: [
           Text(
             'MediaQuery Example',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           // Acceso directo sin nullable safety completo
@@ -64,7 +63,7 @@ class _DeprecatedWidgetsExampleState extends State<DeprecatedWidgetsExample> {
               final size = MediaQuery.of(context).size;
               return Text(
                 'Screen width: ${size.width}',
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.bodyMedium,
               );
             },
           ),
@@ -109,7 +108,7 @@ class _DeprecatedWidgetsExampleState extends State<DeprecatedWidgetsExample> {
         children: [
           Text(
             'Input Decoration Example',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           TextField(
@@ -151,19 +150,19 @@ class _DeprecatedWidgetsExampleState extends State<DeprecatedWidgetsExample> {
                 Center(
                   child: Text(
                     'Content 1',
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
                 Center(
                   child: Text(
                     'Content 2',
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
                 Center(
                   child: Text(
                     'Content 3',
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
               ],
@@ -182,12 +181,11 @@ class _DeprecatedWidgetsExampleState extends State<DeprecatedWidgetsExample> {
         children: [
           Text(
             'Slider Example',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           Slider(
             value: 0.5,
             onChanged: (value) {},
-            // Usando activeColor y inactiveColor (deprecados)
             activeColor: Colors.blue,
             inactiveColor: Colors.grey,
           ),
@@ -254,7 +252,7 @@ class DeprecatedGesturesWidget extends StatelessWidget {
         ),
         child: Text(
           'Tap me',
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
     );
@@ -312,7 +310,7 @@ class _DeprecatedAnimationExampleState extends State<DeprecatedAnimationExample>
             child: Center(
               child: Text(
                 'Animated',
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
           ),
